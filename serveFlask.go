@@ -3,17 +3,18 @@
 package main
 
 import (
+	"github.com/mdhender/hypermedia-systems/app/flask"
 	"github.com/mdhender/hypermedia-systems/server"
 	"github.com/spf13/cobra"
 	"log"
 )
 
-// cmdServe is the root module for all server commands
-var cmdServe = &cobra.Command{
-	Use:   "serve",
-	Short: "serve an application",
+// cmdServeFlask serves the sample flask
+var cmdServeFlask = &cobra.Command{
+	Use:   "flask",
+	Short: "serve the sample flask",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		log.Printf("[serve] running persistentPreRun\n")
+		log.Printf("[flask] running preRun\n")
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		var options []server.Option
@@ -32,6 +33,12 @@ var cmdServe = &cobra.Command{
 			options = append(options, server.WithCorsMiddleware())
 		}
 
+		a, err := flask.New()
+		if err != nil {
+			log.Fatal(err)
+		}
+		options = append(options, server.WithApplication(a))
+
 		s, err := server.New(options...)
 		if err != nil {
 			log.Fatal(err)
@@ -40,11 +47,4 @@ var cmdServe = &cobra.Command{
 	},
 }
 
-var argsServe = struct {
-	host                       string
-	port                       string
-	doNotUseBadRunesMiddleware bool
-	doNotUseCorsMiddleware     bool
-}{
-	port: "8080",
-}
+var argsServeFlask struct{}

@@ -16,10 +16,38 @@ func WithApplication(h http.Handler) Option {
 	}
 }
 
+func WithBadRunesMiddleware() Option {
+	return func(s *Server) error {
+		s.useBadRunesMiddleware = true
+		return nil
+	}
+}
+
+func WithCorsMiddleware() Option {
+	return func(s *Server) error {
+		s.useCorsMiddleware = true
+		return nil
+	}
+}
+
 func WithHost(host string) Option {
 	return func(s *Server) error {
 		s.host = host
 		log.Printf("[server] set host to %q\n", s.host)
+		return nil
+	}
+}
+
+func WithNoBadRunesMiddleware() Option {
+	return func(s *Server) error {
+		s.useBadRunesMiddleware = false
+		return nil
+	}
+}
+
+func WithNoCorsMiddleware() Option {
+	return func(s *Server) error {
+		s.useCorsMiddleware = false
 		return nil
 	}
 }

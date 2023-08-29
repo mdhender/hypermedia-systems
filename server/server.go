@@ -6,6 +6,7 @@ package server
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -17,7 +18,9 @@ import (
 
 type Server struct {
 	http.Server
-	host, port string
+	host, port            string
+	useCorsMiddleware     bool
+	useBadRunesMiddleware bool
 }
 
 func New(options ...Option) (*Server, error) {
@@ -33,22 +36,33 @@ func New(options ...Option) (*Server, error) {
 			return nil, err
 		}
 	}
+	if s.port == ":" {
+		return nil, fmt.Errorf("missing port")
+	}
 	s.Addr = net.JoinHostPort(s.host, s.port)
 
 	return s, nil
 }
 
-func (s *Server) Serve() {
+func (s *Server) Serve() error {
 	if s.Addr == ":" {
-		log.Fatalf("[serve] missing host and/or port\n")
+		return fmt.Errorf("missing port")
+	}
+
+	// inject middleware as requested
+	if s.useBadRunesMiddleware {
+		s.Handler = handleBadRunes(s.Handler)
+	}
+	if s.useCorsMiddleware {
+		s.Handler = optionsCors(s.Handler)
 	}
 
 	// set up stuff so that we can gracefully shut down the server and application
 	serverCh := make(chan struct{})
 	go func() {
-		log.Printf("[serve] serving %q\n", s.Addr)
+		log.Printf("[server] serving %q\n", s.Addr)
 		if err := s.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("[serve] exited with: %v", err)
+			log.Fatalf("[server] exited with: %v", err)
 		}
 		close(serverCh)
 	}()
@@ -69,5 +83,5 @@ func (s *Server) Serve() {
 	}
 
 	// If we got this far, it was an interrupt, so don't exit cleanly
-	log.Fatalf("[server] interrupted and stopped\n")
+	return fmt.Errorf("interrupted and stopped")
 }

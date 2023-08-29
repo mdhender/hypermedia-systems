@@ -8,10 +8,10 @@ import (
 	"time"
 )
 
-// run initializes the Cobra tree and executes the root module.
+// executeCobra initializes the Cobra tree and executes the root module.
 // it returns some errors (mostly with command line arguments),
 // but panics more often than not.
-func run() error {
+func executeCobra() error {
 	defer func(started time.Time) {
 		elapsed := time.Now().Sub(started)
 		if argsRoot.timeSelf {
@@ -26,6 +26,8 @@ func run() error {
 	cmdRoot.AddCommand(cmdServe)
 	cmdServe.PersistentFlags().StringVar(&argsServe.host, "host", argsServe.host, "host to bind to")
 	cmdServe.PersistentFlags().StringVar(&argsServe.port, "port", argsServe.port, "port to listen on")
+
+	cmdServe.AddCommand(cmdServeFlask)
 
 	return cmdRoot.Execute()
 }
