@@ -16,14 +16,14 @@ func (a *App) Router() http.Handler {
 	return router
 }
 
-func (a *App) getIndex() http.HandlerFunc {
+func (a *App) getContacts() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/contacts", http.StatusTemporaryRedirect)
+		_, _ = fmt.Fprintf(w, "Hello, world!")
 	})
 }
 
-func (a *App) getContacts() http.HandlerFunc {
+func (a *App) getIndex() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, _ = fmt.Fprintf(w, "hello")
+		http.Redirect(w, r, "/contacts", http.StatusTemporaryRedirect)
 	})
 }

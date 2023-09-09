@@ -38,19 +38,20 @@ func (cmd *RootCommand) Execute(args []string) error {
 		var arg string
 		arg, args = args[0], args[1:]
 		log.Printf("[rootCommand] %s %v\n", arg, args)
-		if arg == "-h" || arg == "--help" {
-			// do something
+		if arg == "-h" || arg == "--help" || arg == "help" {
+			fmt.Printf("usage: to be determined...\n")
+			os.Exit(2)
 		} else if arg == "--time" {
 			cmd.timeSelf = true
 		} else if arg == "serve" {
 			sub := &ServeCommand{}
 			return sub.Execute(args)
+		} else if arg == "--version" || arg == "version" {
+			fmt.Printf("version 0.0.0\n")
+			return nil
 		} else {
 			return fmt.Errorf("unknown option %q", arg)
 		}
-	}
-	if len(args) != 0 {
-		return fmt.Errorf("unknown option %q", args[0])
 	}
 	return nil
 }
@@ -67,9 +68,22 @@ func (cmd *ServeCommand) Execute(args []string) error {
 		var arg string
 		arg, args = args[0], args[1:]
 		log.Printf("[serveCommand] %s %v\n", arg, args)
-		if arg == "-h" || arg == "--help" {
-			// do something
-		} else if arg == "bad-runes-middleware" {
+		if arg == "--help" || arg == "help" {
+			fmt.Printf("usage: to be determined...\n")
+			os.Exit(2)
+		} else if arg == "-h" {
+			if len(args) == 0 {
+				return fmt.Errorf("serve: --h requires hostname")
+			}
+			options = append(options, server.WithHost(args[0]))
+			args = args[1:]
+		} else if arg == "-p" {
+			if len(args) == 0 {
+				return fmt.Errorf("serve: -p requires port value")
+			}
+			options = append(options, server.WithPort(args[0]))
+			args = args[1:]
+		} else if arg == "--bad-runes-middleware" {
 			options = append(options, server.WithBadRunesMiddleware())
 		} else if arg == "--cors-middleware" {
 			options = append(options, server.WithCorsMiddleware())
@@ -91,7 +105,7 @@ func (cmd *ServeCommand) Execute(args []string) error {
 			args = args[1:]
 		} else if arg == "flask" {
 			sub := ServeFlaskCommand{}
-			app, err := sub.Execute(args)
+			app, err := sub.CreateHandler(args)
 			if err != nil {
 				return err
 			}
@@ -100,20 +114,20 @@ func (cmd *ServeCommand) Execute(args []string) error {
 			return fmt.Errorf("unknown option %q", arg)
 		}
 	}
-	if len(args) != 0 {
-		return fmt.Errorf("unknown option %q", args[0])
-	}
 
 	s, err := server.New(options...)
 	if err != nil {
 		log.Fatal(err)
+	} else if s.Handler == nil {
+		log.Fatal("missing handler")
 	}
+
 	return s.Serve()
 }
 
 type ServeFlaskCommand struct{}
 
-func (cmd *ServeFlaskCommand) Execute(args []string) (http.Handler, error) {
+func (cmd *ServeFlaskCommand) CreateHandler(args []string) (http.Handler, error) {
 	a, err := flask.New()
 	if err != nil {
 		log.Fatal(err)
@@ -123,15 +137,12 @@ func (cmd *ServeFlaskCommand) Execute(args []string) (http.Handler, error) {
 		var arg string
 		arg, args = args[0], args[1:]
 		log.Printf("[serveCommand] %s %v\n", arg, args)
-		if arg == "-h" || arg == "--help" {
-			// do something
+		if arg == "--help" || arg == "help" {
+			fmt.Printf("usage: to be determined...\n")
+			os.Exit(2)
 		} else {
 			return nil, fmt.Errorf("unknown option %q", arg)
 		}
-	}
-
-	if len(args) != 0 {
-		return nil, fmt.Errorf("unknown option %q", args[0])
 	}
 
 	return a, nil

@@ -44,9 +44,16 @@ func New(options ...Option) (*Server, error) {
 	return s, nil
 }
 
+func (s *Server) Set(option Option) error {
+	return option(s)
+}
+
 func (s *Server) Serve() error {
 	if s.Addr == ":" {
 		return fmt.Errorf("missing port")
+	} else if s.Handler == nil {
+		panic("!")
+		return fmt.Errorf("missing handler")
 	}
 
 	// inject middleware as requested
