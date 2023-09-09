@@ -9,11 +9,20 @@ import (
 )
 
 type App struct {
-	router http.Handler
+	router    http.Handler
+	contacts  *Contacts
+	templates string
 }
 
 func New(options ...Option) (*App, error) {
-	a := &App{}
+	a := &App{
+		templates: ".",
+	}
+	for _, option := range options {
+		if err := option(a); err != nil {
+			return nil, err
+		}
+	}
 	a.router = a.Router()
 	return a, nil
 }

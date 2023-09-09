@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 func main() {
@@ -107,31 +108,32 @@ func (cmd *ServeCommand) Execute(args []string) error {
 			sub := ServeFlaskCommand{}
 			app, err := sub.CreateHandler(args)
 			if err != nil {
-				return err
+				return fmt.Errorf("serve: %w", err)
 			}
 			options = append(options, server.WithApplication(app))
+			args = nil
 		} else {
-			return fmt.Errorf("unknown option %q", arg)
+			return fmt.Errorf("serve: unknown option %q", arg)
 		}
 	}
 
 	s, err := server.New(options...)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("serve: %w", err)
 	} else if s.Handler == nil {
-		log.Fatal("missing handler")
+		return fmt.Errorf("serve: missing handler")
 	}
 
-	return s.Serve()
+	if err := s.Serve(); err != nil {
+		return fmt.Errorf("serve: %w", err)
+	}
+	return nil
 }
 
 type ServeFlaskCommand struct{}
 
 func (cmd *ServeFlaskCommand) CreateHandler(args []string) (http.Handler, error) {
-	a, err := flask.New()
-	if err != nil {
-		log.Fatal(err)
-	}
+	var options []flask.Option
 
 	for len(args) != 0 {
 		var arg string
@@ -140,9 +142,29 @@ func (cmd *ServeFlaskCommand) CreateHandler(args []string) (http.Handler, error)
 		if arg == "--help" || arg == "help" {
 			fmt.Printf("usage: to be determined...\n")
 			os.Exit(2)
+		} else if arg == "--templates" {
+			if len(args) == 0 {
+				return nil, fmt.Errorf("flask: --template requires path")
+			}
+			path, err := filepath.Abs(args[0])
+			if err != nil {
+				return nil, fmt.Errorf("flask: --template requires valid path")
+			}
+			options = append(options, flask.WithTemplates(path))
+			args = args[1:]
 		} else {
-			return nil, fmt.Errorf("unknown option %q", arg)
+			return nil, fmt.Errorf("flask: unknown option %q", arg)
 		}
+	}
+
+	options = append(options, flask.WithContacts(flask.NewContacts(
+		flask.NewContact("jim", "Jim"),
+		flask.NewContact("joe", "Joe"),
+	)))
+
+	a, err := flask.New(options...)
+	if err != nil {
+		return nil, fmt.Errorf("flask: %w", err)
 	}
 
 	return a, nil
