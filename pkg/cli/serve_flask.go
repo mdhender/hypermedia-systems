@@ -4,6 +4,7 @@ package cli
 
 import (
 	"github.com/mdhender/hypermedia-systems/app/flask"
+	"github.com/mdhender/hypermedia-systems/server"
 	"github.com/spf13/cobra"
 	"log"
 	"path/filepath"
@@ -40,9 +41,30 @@ var (
 			if err != nil {
 				log.Fatalf("[flask] app: %v\n", err)
 			}
-			argsServe.Handler = app
 
-			cmdServe.Run(cmd, args)
+			log.Printf("[flask] serve %+v\n", argsServe)
+
+			serverOptions := []server.Option{server.WithApplication(app)}
+			if argsServe.Host != "" {
+				serverOptions = append(serverOptions, server.WithHost(argsServe.Host))
+			}
+			serverOptions = append(serverOptions, server.WithPort(argsServe.Port))
+			if argsServe.BadRunesMiddleware {
+				serverOptions = append(serverOptions, server.WithBadRunesMiddleware())
+			}
+			if argsServe.CORSMiddleware {
+				serverOptions = append(serverOptions, server.WithCorsMiddleware())
+			}
+			s, err := server.New(serverOptions...)
+			if err != nil {
+				log.Fatalf("[serve] %v", err)
+			} else if s.Handler == nil {
+				log.Fatalf("[serve] missing handler\n")
+			}
+
+			if err := s.Serve(); err != nil {
+				log.Fatalf("[serve] %v", err)
+			}
 		},
 	}
 )
