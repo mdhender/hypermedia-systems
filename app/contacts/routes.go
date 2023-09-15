@@ -1,7 +1,6 @@
 // Copyright (c) 2023 Michael D Henderson. All rights reserved.
 
-// Package contact implements the Contact.app server from the Hypermedia Systems book.
-package contact
+package contacts
 
 import (
 	"bytes"
@@ -15,50 +14,50 @@ import (
 func (a *App) Router() http.Handler {
 	router := way.NewRouter()
 	router.Handle("GET", "/", a.getIndex())
-	router.Handle("GET", "/contact", a.getContacts())
+	router.Handle("GET", "/contacts", a.getContacts())
 	return router
 }
 
 func (a *App) getContacts() http.HandlerFunc {
-	t, err := template.ParseFiles(filepath.Join(a.templates, "contact.gohtml"))
+	t, err := template.ParseFiles(filepath.Join(a.templates, "contacts.gohtml"))
 	if err != nil {
-		log.Printf("get contact: %v\n", err)
+		log.Printf("get contacts: %v\n", err)
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		})
 	}
 	type payload struct {
 		Search   string
-		Contacts []string
+		Contacts []Contact
 	}
-	// log.Printf("[contact] contact %+v\n", a.contact.contact)
+	// log.Printf("[contacts] contacts %+v\n", a.contacts.contacts)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// a.contact.Dump(os.Stdout)
+		// a.contacts.Dump(os.Stdout)
 		params := r.URL.Query()
-		// log.Printf("get contact: params %+v\n", params)
+		// log.Printf("get contacts: params %+v\n", params)
 		bb := &bytes.Buffer{}
 		var p payload
 		if search, ok := params["q"]; !ok {
 			c := a.contacts.All()
 			for _, contact := range c.contacts {
-				p.Contacts = append(p.Contacts, contact.Name)
+				p.Contacts = append(p.Contacts, *contact)
 			}
 		} else if len(search) != 1 {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		} else if len(search[0]) == 0 {
-			// log.Printf("[contact] get contact: search %+v\n", search)
+			// log.Printf("[contacts] get contacts: search %+v\n", search)
 			c := a.contacts.All()
 			for _, contact := range c.contacts {
-				p.Contacts = append(p.Contacts, contact.Name)
+				p.Contacts = append(p.Contacts, *contact)
 			}
 		} else {
-			// log.Printf("[contact] get contact: search %+v\n", search)
+			// log.Printf("[contacts] get contacts: search %+v\n", search)
 			p.Search = search[0]
 			c := a.contacts.Search(search[0])
 			for _, contact := range c.contacts {
-				p.Contacts = append(p.Contacts, contact.Name)
+				p.Contacts = append(p.Contacts, *contact)
 			}
 		}
 		if err = t.Execute(bb, p); err != nil {
@@ -72,7 +71,7 @@ func (a *App) getContacts() http.HandlerFunc {
 
 func (a *App) getIndex() http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/contact", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/contacts", http.StatusTemporaryRedirect)
 	})
 }
 

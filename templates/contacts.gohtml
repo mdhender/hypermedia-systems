@@ -5,17 +5,45 @@
     <title>Contacts</title>
 </head>
 <body>
-<ul>
-    {{range .Contacts}}
-        <li>{{ . }}</li>
-    {{end}}
-</ul>
 
-<form action="/contacts" method="get" >
+<h1>CONTACTS.APP</h1>
+<h2>A Demo Contacts Application</h2>
+
+<form action="/contacts" method="get">
     <label for="search">Search Term</label>
     <input id="search" type="search" name="q" value="{{ .Search }}"/>
     <input type="submit" value="Search"/>
 </form>
+
+<table>
+    <thead>
+    <tr>
+        <th>First</th>
+        <th>Last</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {{range .Contacts}}
+        <tr>
+            <td>{{ .First }}</td>
+            <td>{{ .Last }}</td>
+            <td>{{ .Phone }}</td>
+            <td>{{ .Email }}</td>
+            <td>
+                <a href="/contacts/{{ .Id }}/edit">Edit</a>
+                <a href="/contacts/{{ .Id }}">View</a>
+            </td>
+        </tr>
+    {{end}}
+    </tbody>
+</table>
+
+<p>
+    <a href="/contacts/new">Add Contact</a>
+</p>
 
 </body>
 </html>

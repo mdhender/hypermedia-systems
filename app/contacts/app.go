@@ -1,6 +1,7 @@
 // Copyright (c) 2023 Michael D Henderson. All rights reserved.
 
-package contact
+// Package contacts implements the Contacts.app server from the Hypermedia Systems book.
+package contacts
 
 import (
 	"log"
