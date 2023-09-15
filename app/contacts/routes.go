@@ -4,7 +4,8 @@ package contacts
 
 import (
 	"bytes"
-	"github.com/matryer/way"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"html/template"
 	"log"
 	"net/http"
@@ -12,10 +13,27 @@ import (
 )
 
 func (a *App) Router() http.Handler {
-	router := way.NewRouter()
-	router.Handle("GET", "/", a.getIndex())
-	router.Handle("GET", "/contacts", a.getContacts())
-	return router
+	r := chi.NewRouter()
+
+	// add global middleware
+	if a.server.middleware.badRunes != nil {
+		r.Use(a.server.middleware.badRunes)
+	}
+	if a.server.middleware.cors != nil {
+		r.Use(a.server.middleware.cors)
+	}
+	if a.server.middleware.logging != nil {
+		r.Use(middleware.Logger)
+	}
+
+	// create routes
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/contacts", http.StatusTemporaryRedirect)
+	})
+	r.Get("/contacts", a.getContacts())
+
+	a.server.Handler = r
+	return a.server.Handler
 }
 
 func (a *App) getContacts() http.HandlerFunc {

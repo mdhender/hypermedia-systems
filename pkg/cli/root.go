@@ -25,12 +25,11 @@ func Execute() error {
 
 	cmdRoot.PersistentFlags().BoolVar(&argsRoot.TimeSelf, "time", argsRoot.TimeSelf, "display run time statistics on completion")
 
-	cmdServe.PersistentFlags().StringVar(&argsServe.Host, "host", argsServe.Host, "host to bind to")
-	cmdServe.PersistentFlags().StringVar(&argsServe.Port, "port", argsServe.Port, "port to listen on")
-	cmdServe.PersistentFlags().BoolVar(&argsServe.BadRunesMiddleware, "bad-runes-middleware", argsServe.BadRunesMiddleware, "enable bad runes middleware")
-	cmdServe.PersistentFlags().BoolVar(&argsServe.CORSMiddleware, "cors-middleware", argsServe.CORSMiddleware, "enable CORS options middleware")
 	cmdRoot.AddCommand(cmdServe)
 
+	cmdServe.PersistentFlags().BoolVar(&argsServeContacts.Middleware.BadRunes, "bad-runes-middleware", argsServeContacts.Middleware.BadRunes, "enable bad runes middleware")
+	cmdServe.PersistentFlags().BoolVar(&argsServeContacts.Middleware.CORS, "cors-middleware", argsServeContacts.Middleware.CORS, "enable CORS options middleware")
+	cmdServe.PersistentFlags().BoolVar(&argsServeContacts.Middleware.Logging, "logging-middleware", argsServeContacts.Middleware.Logging, "enable logging middleware")
 	cmdServeContacts.Flags().StringVar(&argsServeContacts.Templates, "templates", argsServeContacts.Templates, "path to templates")
 	cmdServe.AddCommand(cmdServeContacts)
 

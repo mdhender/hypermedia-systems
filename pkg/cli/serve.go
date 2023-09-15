@@ -7,14 +7,7 @@ import (
 )
 
 var (
-	argsServe = struct {
-		Host               string
-		Port               string
-		BadRunesMiddleware bool
-		CORSMiddleware     bool
-	}{
-		Port: "8080",
-	}
+	argsServe = struct{}{}
 
 	cmdServe = &cobra.Command{
 		Use:   "serve",

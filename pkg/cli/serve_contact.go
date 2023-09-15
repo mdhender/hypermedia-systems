@@ -3,8 +3,9 @@
 package cli
 
 import (
+	"github.com/go-chi/chi/middleware"
 	"github.com/mdhender/hypermedia-systems/app/contacts"
-	"github.com/mdhender/hypermedia-systems/server"
+	"github.com/mdhender/hypermedia-systems/pkg/mw"
 	"github.com/spf13/cobra"
 	"log"
 	"path/filepath"
@@ -12,14 +13,22 @@ import (
 
 var (
 	argsServeContacts = struct {
+		Host       string
+		Port       string
+		Middleware struct {
+			BadRunes bool
+			CORS     bool
+			Logging  bool
+		}
 		Templates string // path to templates
 	}{
+		Port:      "8080",
 		Templates: ".",
 	}
 
 	cmdServeContacts = &cobra.Command{
 		Use:   "contacts",
-		Short: "run contacts server",
+		Short: "run contacts app",
 		Long:  `Run the contacts application.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			path, err := filepath.Abs(argsServeContacts.Templates)
@@ -30,41 +39,33 @@ var (
 
 			log.Printf("[contacts] serve contacts %+v\n", argsServeContacts)
 
-			var contactOptions []contacts.Option
-			contactOptions = append(contactOptions, contacts.WithTemplates(argsServeContacts.Templates))
-			contactOptions = append(contactOptions, contacts.WithContacts(contacts.NewContacts(
+			var options []contacts.Option
+			options = append(options, contacts.WithTemplates(argsServeContacts.Templates))
+			options = append(options, contacts.WithHost(argsServeContacts.Host))
+			options = append(options, contacts.WithPort(argsServeContacts.Port))
+			if argsServeContacts.Middleware.BadRunes {
+				options = append(options, contacts.WithBadRunesMiddleware(mw.BadRunes))
+			}
+			if argsServeContacts.Middleware.CORS {
+				options = append(options, contacts.WithCorsMiddleware(mw.CORS))
+			}
+			if argsServeContacts.Middleware.Logging {
+				options = append(options, contacts.WithLoggingMiddleware(middleware.Logger))
+			}
+
+			options = append(options, contacts.WithContacts(contacts.NewContacts(
 				contacts.NewContact(42, "John", "Smith", "303/555.2345", "john@example.com"),
 				contacts.NewContact(43, "Dana", "Crandith", "303/555.1212", "dcran@example.com"),
 				contacts.NewContact(44, "Edith", "Neutvaar", "303/555.9876", "en@example.com"),
 			)))
 
-			app, err := contacts.New(contactOptions...)
+			app, err := contacts.New(options...)
 			if err != nil {
 				log.Fatalf("[contacts] app: %v\n", err)
 			}
 
-			log.Printf("[contacts] serve %+v\n", argsServe)
-
-			serverOptions := []server.Option{server.WithApplication(app)}
-			if argsServe.Host != "" {
-				serverOptions = append(serverOptions, server.WithHost(argsServe.Host))
-			}
-			serverOptions = append(serverOptions, server.WithPort(argsServe.Port))
-			if argsServe.BadRunesMiddleware {
-				serverOptions = append(serverOptions, server.WithBadRunesMiddleware())
-			}
-			if argsServe.CORSMiddleware {
-				serverOptions = append(serverOptions, server.WithCorsMiddleware())
-			}
-			s, err := server.New(serverOptions...)
-			if err != nil {
-				log.Fatalf("[contacts] %v", err)
-			} else if s.Handler == nil {
-				log.Fatalf("[contacts] missing handler\n")
-			}
-
-			if err := s.Serve(); err != nil {
-				log.Fatalf("[contacts] %v", err)
+			if err := app.ListenAndServe(); err != nil {
+				log.Fatal(err)
 			}
 		},
 	}
