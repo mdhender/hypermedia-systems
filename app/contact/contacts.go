@@ -1,6 +1,6 @@
 // Copyright (c) 2023 Michael D Henderson. All rights reserved.
 
-package contacts
+package contact
 
 import (
 	"fmt"
@@ -20,14 +20,14 @@ func (c *Contacts) All() *Contacts {
 
 func (c *Contacts) Dump(w io.Writer) {
 	if c == nil {
-		_, _ = fmt.Fprintf(w, "[contacts] dump: nil\n")
+		_, _ = fmt.Fprintf(w, "[contact] dump: nil\n")
 		return
 	} else if len(c.contacts) == 0 {
-		_, _ = fmt.Fprintf(w, "[contacts] dump: []\n")
+		_, _ = fmt.Fprintf(w, "[contact] dump: []\n")
 		return
 	}
 	for i, contact := range c.contacts {
-		_, _ = fmt.Fprintf(w, "[contacts] dump: %d %+v\n", i+1, *contact)
+		_, _ = fmt.Fprintf(w, "[contact] dump: %d %+v\n", i+1, *contact)
 	}
 }
 

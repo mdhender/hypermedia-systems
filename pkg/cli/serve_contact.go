@@ -3,7 +3,7 @@
 package cli
 
 import (
-	"github.com/mdhender/hypermedia-systems/app/contacts"
+	"github.com/mdhender/hypermedia-systems/app/contact"
 	"github.com/mdhender/hypermedia-systems/server"
 	"github.com/spf13/cobra"
 	"log"
@@ -11,38 +11,38 @@ import (
 )
 
 var (
-	argsServeContacts = struct {
+	argsServeContact = struct {
 		Templates string // path to templates
 	}{
 		Templates: ".",
 	}
 
-	cmdServeContacts = &cobra.Command{
-		Use:   "contacts",
-		Short: "run contacts server",
-		Long:  `Run an contacts server.`,
+	cmdServeContact = &cobra.Command{
+		Use:   "contact",
+		Short: "run contact server",
+		Long:  `Run the contact application.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			path, err := filepath.Abs(argsServeContacts.Templates)
+			path, err := filepath.Abs(argsServeContact.Templates)
 			if err != nil {
-				log.Fatalf("[contacts] templates: %v\n", err)
+				log.Fatalf("[contact] templates: %v\n", err)
 			}
-			argsServeContacts.Templates = path
+			argsServeContact.Templates = path
 
-			log.Printf("[contacts] serve contacts %+v\n", argsServeContacts)
+			log.Printf("[contact] serve contact %+v\n", argsServeContact)
 
-			var contactsOptions []contacts.Option
-			contactsOptions = append(contactsOptions, contacts.WithTemplates(argsServeContacts.Templates))
-			contactsOptions = append(contactsOptions, contacts.WithContacts(contacts.NewContacts(
-				contacts.NewContact("jim", "Jim"),
-				contacts.NewContact("joe", "Joe"),
+			var contactOptions []contact.Option
+			contactOptions = append(contactOptions, contact.WithTemplates(argsServeContact.Templates))
+			contactOptions = append(contactOptions, contact.WithContacts(contact.NewContacts(
+				contact.NewContact("jim", "Jim"),
+				contact.NewContact("joe", "Joe"),
 			)))
 
-			app, err := contacts.New(contactsOptions...)
+			app, err := contact.New(contactOptions...)
 			if err != nil {
-				log.Fatalf("[contacts] app: %v\n", err)
+				log.Fatalf("[contact] app: %v\n", err)
 			}
 
-			log.Printf("[contacts] serve %+v\n", argsServe)
+			log.Printf("[contact] serve %+v\n", argsServe)
 
 			serverOptions := []server.Option{server.WithApplication(app)}
 			if argsServe.Host != "" {
@@ -57,13 +57,13 @@ var (
 			}
 			s, err := server.New(serverOptions...)
 			if err != nil {
-				log.Fatalf("[serve] %v", err)
+				log.Fatalf("[contact] %v", err)
 			} else if s.Handler == nil {
-				log.Fatalf("[serve] missing handler\n")
+				log.Fatalf("[contact] missing handler\n")
 			}
 
 			if err := s.Serve(); err != nil {
-				log.Fatalf("[serve] %v", err)
+				log.Fatalf("[contact] %v", err)
 			}
 		},
 	}
