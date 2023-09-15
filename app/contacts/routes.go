@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Michael D Henderson. All rights reserved.
 
-// Package flask implements a sample application.
-package flask
+// Package contacts implements a sample application.
+package contacts
 
 import (
 	"bytes"
@@ -31,7 +31,7 @@ func (a *App) getContacts() http.HandlerFunc {
 		Search   string
 		Contacts []string
 	}
-	// log.Printf("[flask] contacts %+v\n", a.contacts.contacts)
+	// log.Printf("[contacts] contacts %+v\n", a.contacts.contacts)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// a.contacts.Dump(os.Stdout)
@@ -48,13 +48,13 @@ func (a *App) getContacts() http.HandlerFunc {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		} else if len(search[0]) == 0 {
-			// log.Printf("[flask] get contacts: search %+v\n", search)
+			// log.Printf("[contacts] get contacts: search %+v\n", search)
 			c := a.contacts.All()
 			for _, contact := range c.contacts {
 				p.Contacts = append(p.Contacts, contact.Name)
 			}
 		} else {
-			// log.Printf("[flask] get contacts: search %+v\n", search)
+			// log.Printf("[contacts] get contacts: search %+v\n", search)
 			p.Search = search[0]
 			c := a.contacts.Search(search[0])
 			for _, contact := range c.contacts {

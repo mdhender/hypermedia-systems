@@ -31,8 +31,8 @@ func Execute() error {
 	cmdServe.PersistentFlags().BoolVar(&argsServe.CORSMiddleware, "cors-middleware", argsServe.CORSMiddleware, "enable CORS options middleware")
 	cmdRoot.AddCommand(cmdServe)
 
-	cmdServeFlask.Flags().StringVar(&argsServeFlask.Templates, "templates", argsServeFlask.Templates, "path to templates")
-	cmdServe.AddCommand(cmdServeFlask)
+	cmdServeContacts.Flags().StringVar(&argsServeContacts.Templates, "templates", argsServeContacts.Templates, "path to templates")
+	cmdServe.AddCommand(cmdServeContacts)
 
 	cmdRoot.AddCommand(cmdVersion)
 

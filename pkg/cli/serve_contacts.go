@@ -3,7 +3,7 @@
 package cli
 
 import (
-	"github.com/mdhender/hypermedia-systems/app/flask"
+	"github.com/mdhender/hypermedia-systems/app/contacts"
 	"github.com/mdhender/hypermedia-systems/server"
 	"github.com/spf13/cobra"
 	"log"
@@ -11,38 +11,38 @@ import (
 )
 
 var (
-	argsServeFlask = struct {
+	argsServeContacts = struct {
 		Templates string // path to templates
 	}{
 		Templates: ".",
 	}
 
-	cmdServeFlask = &cobra.Command{
-		Use:   "flask",
-		Short: "run flask server",
-		Long:  `Run an flask server.`,
+	cmdServeContacts = &cobra.Command{
+		Use:   "contacts",
+		Short: "run contacts server",
+		Long:  `Run an contacts server.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			path, err := filepath.Abs(argsServeFlask.Templates)
+			path, err := filepath.Abs(argsServeContacts.Templates)
 			if err != nil {
-				log.Fatalf("[flask] templates: %v\n", err)
+				log.Fatalf("[contacts] templates: %v\n", err)
 			}
-			argsServeFlask.Templates = path
+			argsServeContacts.Templates = path
 
-			log.Printf("[flask] serve flask %+v\n", argsServeFlask)
+			log.Printf("[contacts] serve contacts %+v\n", argsServeContacts)
 
-			var flaskOptions []flask.Option
-			flaskOptions = append(flaskOptions, flask.WithTemplates(argsServeFlask.Templates))
-			flaskOptions = append(flaskOptions, flask.WithContacts(flask.NewContacts(
-				flask.NewContact("jim", "Jim"),
-				flask.NewContact("joe", "Joe"),
+			var contactsOptions []contacts.Option
+			contactsOptions = append(contactsOptions, contacts.WithTemplates(argsServeContacts.Templates))
+			contactsOptions = append(contactsOptions, contacts.WithContacts(contacts.NewContacts(
+				contacts.NewContact("jim", "Jim"),
+				contacts.NewContact("joe", "Joe"),
 			)))
 
-			app, err := flask.New(flaskOptions...)
+			app, err := contacts.New(contactsOptions...)
 			if err != nil {
-				log.Fatalf("[flask] app: %v\n", err)
+				log.Fatalf("[contacts] app: %v\n", err)
 			}
 
-			log.Printf("[flask] serve %+v\n", argsServe)
+			log.Printf("[contacts] serve %+v\n", argsServe)
 
 			serverOptions := []server.Option{server.WithApplication(app)}
 			if argsServe.Host != "" {
