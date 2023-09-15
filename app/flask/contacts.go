@@ -2,6 +2,11 @@
 
 package flask
 
+import (
+	"fmt"
+	"io"
+)
+
 type Contacts struct {
 	contacts []*Contact
 }
@@ -11,6 +16,19 @@ func (c *Contacts) All() *Contacts {
 		return &Contacts{}
 	}
 	return c
+}
+
+func (c *Contacts) Dump(w io.Writer) {
+	if c == nil {
+		_, _ = fmt.Fprintf(w, "[contacts] dump: nil\n")
+		return
+	} else if len(c.contacts) == 0 {
+		_, _ = fmt.Fprintf(w, "[contacts] dump: []\n")
+		return
+	}
+	for i, contact := range c.contacts {
+		_, _ = fmt.Fprintf(w, "[contacts] dump: %d %+v\n", i+1, *contact)
+	}
 }
 
 func (c *Contacts) Search(search ...string) *Contacts {
