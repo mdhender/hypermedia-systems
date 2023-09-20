@@ -5,7 +5,7 @@
 package main
 
 import (
-	"github.com/mdhender/hypermedia-systems/pkg/cli"
+	"github.com/mdhender/hypermedia-systems/internal/cli"
 	"log"
 )
 

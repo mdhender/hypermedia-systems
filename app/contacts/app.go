@@ -4,6 +4,7 @@
 package contacts
 
 import (
+	"github.com/mdhender/hypermedia-systems/internal/store"
 	"log"
 	"net"
 	"net/http"
@@ -12,7 +13,6 @@ import (
 
 type App struct {
 	router    http.Handler
-	contacts  *Contacts
 	templates string
 	server    struct {
 		http.Server
@@ -24,6 +24,7 @@ type App struct {
 			logging  func(http.Handler) http.Handler
 		}
 	}
+	store *store.Store
 }
 
 func New(options ...Option) (*App, error) {
@@ -41,6 +42,10 @@ func New(options ...Option) (*App, error) {
 		if err := option(a); err != nil {
 			return nil, err
 		}
+	}
+
+	if a.store == nil {
+		a.store = store.New()
 	}
 
 	a.router = a.Router()

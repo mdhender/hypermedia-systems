@@ -4,6 +4,7 @@ package contacts
 
 import (
 	"fmt"
+	"github.com/mdhender/hypermedia-systems/internal/store"
 	"net"
 	"net/http"
 	"os"
@@ -15,19 +16,6 @@ type Option func(*App) error
 func WithBadRunesMiddleware(handler func(next http.Handler) http.Handler) Option {
 	return func(a *App) error {
 		a.server.middleware.badRunes = handler
-		return nil
-	}
-}
-
-func WithContacts(c *Contacts) Option {
-	return func(a *App) error {
-		if a.contacts == nil {
-			a.contacts = c
-		} else {
-			for _, contact := range c.contacts {
-				a.contacts.contacts = append(a.contacts.contacts, contact)
-			}
-		}
 		return nil
 	}
 }
@@ -71,6 +59,13 @@ func WithPort(port string) Option {
 func WithReadTimeout(d time.Duration) Option {
 	return func(a *App) error {
 		a.server.ReadTimeout = d
+		return nil
+	}
+}
+
+func WithStore(s *store.Store) Option {
+	return func(a *App) error {
+		a.store = s
 		return nil
 	}
 }

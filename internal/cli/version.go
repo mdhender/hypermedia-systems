@@ -4,7 +4,7 @@ package cli
 
 import (
 	"fmt"
-	"github.com/mdhender/hypermedia-systems/pkg/semver"
+	"github.com/mdhender/hypermedia-systems/internal/semver"
 	"github.com/spf13/cobra"
 )
 

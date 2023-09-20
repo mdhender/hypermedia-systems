@@ -26,7 +26,13 @@ func (a *App) Router() http.Handler {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/contacts", http.StatusTemporaryRedirect)
 	})
-	r.Get("/contacts", a.getContacts())
+	r.Get("/contacts", a.contacts())
+	r.Get("/contacts/new", a.contacts_new_get())
+	r.Post("/contacts/new", a.contacts_new())
+	r.Get("/contacts/{id}", a.contacts_view())
+	r.Get("/contacts/{id}/edit", a.contacts_edit_get())
+	r.Post("/contacts/{id}/edit", a.contacts_edit_post())
+	r.Post("/contacts/{id}/delete", a.contacts_delete())
 
 	a.server.Handler = r
 	return a.server.Handler

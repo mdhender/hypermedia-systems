@@ -5,7 +5,7 @@ package cli
 import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/mdhender/hypermedia-systems/app/contacts"
-	"github.com/mdhender/hypermedia-systems/pkg/mw"
+	"github.com/mdhender/hypermedia-systems/internal/mw"
 	"github.com/spf13/cobra"
 	"log"
 	"path/filepath"
@@ -52,12 +52,6 @@ var (
 			if argsServeContacts.Middleware.Logging {
 				options = append(options, contacts.WithLoggingMiddleware(middleware.Logger))
 			}
-
-			options = append(options, contacts.WithContacts(contacts.NewContacts(
-				contacts.NewContact(42, "John", "Smith", "303/555.2345", "john@example.com"),
-				contacts.NewContact(43, "Dana", "Crandith", "303/555.1212", "dcran@example.com"),
-				contacts.NewContact(44, "Edith", "Neutvaar", "303/555.9876", "en@example.com"),
-			)))
 
 			app, err := contacts.New(options...)
 			if err != nil {
