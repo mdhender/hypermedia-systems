@@ -1,0 +1,43 @@
+{{define "content"}}
+    {{if .Flash}}
+        <script>alert("{{.Flash}}");</script>
+    {{end}}
+
+    <form action="/contacts" method="get">
+        <label for="search">Search Term</label>
+        <input id="search" type="search" name="q" value="{{ .Search }}"/>
+        <input type="submit" value="Search"/>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>First</th>
+            <th>Last</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {{range .Contacts}}
+            <tr>
+                <td>{{ .First }}</td>
+                <td>{{ .Last }}</td>
+                <td>{{ .Phone }}</td>
+                <td>{{ .Email }}</td>
+                <td>
+                    <a href="/contacts/{{ .Id }}/edit">Edit</a>
+                    <a href="/contacts/{{ .Id }}">View</a>
+                </td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+
+    <footer>
+        <p>
+            <a href="/contacts/new">Add Contact</a>
+        </p>
+    </footer>
+{{end}}
