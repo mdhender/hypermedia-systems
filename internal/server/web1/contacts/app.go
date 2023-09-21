@@ -4,6 +4,7 @@
 package contacts
 
 import (
+	"github.com/mdhender/hypermedia-systems/internal/config"
 	"github.com/mdhender/hypermedia-systems/internal/store"
 	"log"
 	"net"
@@ -27,28 +28,23 @@ type App struct {
 	store *store.Store
 }
 
-func New(options ...Option) (*App, error) {
+func New(cfg *config.Config) (*App, error) {
 	a := &App{
 		templates: ".",
 	}
-	a.server.host = ""
-	a.server.port = "8080"
+	a.server.host = cfg.Server.Host
+	a.server.port = cfg.Server.Port
 	a.server.Addr = net.JoinHostPort(a.server.host, a.server.port)
 	a.server.MaxHeaderBytes = 1 << 20 // 1mb?
 	a.server.ReadTimeout = 5 * time.Second
 	a.server.WriteTimeout = 10 * time.Second
-
-	for _, option := range options {
-		if err := option(a); err != nil {
-			return nil, err
-		}
-	}
+	a.templates = cfg.Templates
 
 	if a.store == nil {
 		a.store = store.New()
 	}
 
-	a.router = a.Router()
+	a.router = a.Router(cfg)
 
 	return a, nil
 }

@@ -5,20 +5,22 @@ package contacts
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/mdhender/hypermedia-systems/internal/config"
+	"github.com/mdhender/hypermedia-systems/internal/mw"
 	"net/http"
 )
 
-func (a *App) Router() http.Handler {
+func (a *App) Router(cfg *config.Config) http.Handler {
 	r := chi.NewRouter()
 
 	// add global middleware
-	if a.server.middleware.badRunes != nil {
-		r.Use(a.server.middleware.badRunes)
+	if cfg.Middleware.BadRunes {
+		r.Use(mw.BadRunes)
 	}
-	if a.server.middleware.cors != nil {
-		r.Use(a.server.middleware.cors)
+	if cfg.Middleware.Cors {
+		r.Use(mw.CORS)
 	}
-	if a.server.middleware.logging != nil {
+	if cfg.Middleware.Logging {
 		r.Use(middleware.Logger)
 	}
 
