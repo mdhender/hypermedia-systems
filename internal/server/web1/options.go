@@ -1,6 +1,6 @@
 // Copyright (c) 2023 Michael D Henderson. All rights reserved.
 
-package contacts
+package web1
 
 import (
 	"fmt"

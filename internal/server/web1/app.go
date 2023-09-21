@@ -1,7 +1,7 @@
 // Copyright (c) 2023 Michael D Henderson. All rights reserved.
 
-// Package contacts implements the Contacts.app server from the Hypermedia Systems book.
-package contacts
+// Package web1 implements the Contacts.app server from the Hypermedia Systems book.
+package web1
 
 import (
 	"github.com/mdhender/hypermedia-systems/internal/config"

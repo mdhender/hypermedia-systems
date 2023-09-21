@@ -1,9 +1,9 @@
 // Copyright (c) 2023 Michael D Henderson. All rights reserved.
 
-package contacts
+package web1
 
 //type Contacts struct {
-//	contacts []Contact
+//	web1 []Contact
 //}
 //
 //func (c *Contacts) All() *Contacts {
@@ -15,14 +15,14 @@ package contacts
 //
 //func (c *Contacts) Dump(w io.Writer) {
 //	if c == nil {
-//		_, _ = fmt.Fprintf(w, "[contacts] dump: nil\n")
+//		_, _ = fmt.Fprintf(w, "[web1] dump: nil\n")
 //		return
-//	} else if len(c.contacts) == 0 {
-//		_, _ = fmt.Fprintf(w, "[contacts] dump: []\n")
+//	} else if len(c.web1) == 0 {
+//		_, _ = fmt.Fprintf(w, "[web1] dump: []\n")
 //		return
 //	}
-//	for i, contact := range c.contacts {
-//		_, _ = fmt.Fprintf(w, "[contacts] dump: %d %+v\n", i+1, contact)
+//	for i, contact := range c.web1 {
+//		_, _ = fmt.Fprintf(w, "[web1] dump: %d %+v\n", i+1, contact)
 //	}
 //}
 //
@@ -34,15 +34,15 @@ package contacts
 //	matches := func(a, b string) bool {
 //		return strings.EqualFold(a, b)
 //	}
-//	for _, contact := range c.contacts {
+//	for _, contact := range c.web1 {
 //		if matches(search, contact.First) {
-//			s.contacts = append(s.contacts, contact)
+//			s.web1 = append(s.web1, contact)
 //		} else if matches(search, contact.Last) {
-//			s.contacts = append(s.contacts, contact)
+//			s.web1 = append(s.web1, contact)
 //		} else if matches(search, contact.Phone) {
-//			s.contacts = append(s.contacts, contact)
+//			s.web1 = append(s.web1, contact)
 //		} else if matches(search, contact.Email) {
-//			s.contacts = append(s.contacts, contact)
+//			s.web1 = append(s.web1, contact)
 //		}
 //	}
 //	return s
@@ -63,10 +63,10 @@ package contacts
 //	}
 //}
 //
-//func NewContacts(contacts ...Contact) *Contacts {
+//func NewContacts(web1 ...Contact) *Contacts {
 //	c := &Contacts{}
-//	for _, contact := range contacts {
-//		c.contacts = append(c.contacts, contact)
+//	for _, contact := range web1 {
+//		c.web1 = append(c.web1, contact)
 //	}
 //	return c
 //}

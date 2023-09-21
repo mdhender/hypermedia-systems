@@ -1,13 +1,13 @@
 // Copyright (c) 2023 Michael D Henderson. All rights reserved.
 
-// Package main implements the contacts app v1 from Hypermedia Systems.
+// Package main implements the web1 contacts app from Hypermedia Systems.
 // (See https://hypermedia.systems/ for the original source.)
 package main
 
 import (
 	"fmt"
 	"github.com/mdhender/hypermedia-systems/internal/config"
-	"github.com/mdhender/hypermedia-systems/internal/server/web1/contacts"
+	"github.com/mdhender/hypermedia-systems/internal/server/web1"
 	"log"
 	"os"
 	"time"
@@ -29,14 +29,10 @@ func main() {
 		log.Printf("[main] elapsed time %v\n", time.Now().Sub(started))
 	}(time.Now())
 
-	app, err := contacts.New(cfg)
+	app, err := web1.New(cfg)
 	if err != nil {
-		log.Fatalf("[contacts] app: %v\n", err)
+		log.Fatalf("[web1] app: %v\n", err)
 	} else if err = app.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
-
-	//if err := cli.Execute(); err != nil {
-	//	log.Fatal(err)
-	//}
 }

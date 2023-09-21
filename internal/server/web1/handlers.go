@@ -1,6 +1,6 @@
 // Copyright (c) 2023 Michael D Henderson. All rights reserved.
 
-package contacts
+package web1
 
 import (
 	"fmt"
@@ -32,10 +32,10 @@ func (a *App) contacts() http.HandlerFunc {
 		Contacts []PayloadContact
 		Flash    string
 	}
-	// log.Printf("[contacts] contacts %+v\n", a.contacts.contacts)
+	// log.Printf("[web1] contacts %+v\n", a.web1.web1)
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		// a.contacts.Dump(os.Stdout)
+		// a.web1.Dump(os.Stdout)
 		var p payload
 
 		if flash, err := r.Cookie("flash"); err == nil {
@@ -50,12 +50,12 @@ func (a *App) contacts() http.HandlerFunc {
 		}
 
 		p.Search = r.URL.Query().Get("q")
-		// log.Printf("[contacts] contacts: pSearch %+v\n", pSearch)
+		// log.Printf("[web1] contacts: pSearch %+v\n", pSearch)
 		var results []store.Contact
 		if p.Search == "" { // missing or explicitly zero length
 			results = a.store.AllContacts()
 		} else {
-			// log.Printf("[contacts] contacts: search %+v\n", search)
+			// log.Printf("[web1] contacts: search %+v\n", search)
 			results = a.store.SearchContacts(p.Search)
 		}
 		for _, contact := range results {
@@ -75,7 +75,7 @@ func (a *App) contacts_new_get() http.HandlerFunc {
 	type payload struct {
 		Contact PayloadContact
 	}
-	// log.Printf("[contacts] contacts_new_get %+v\n", a.contacts.contacts)
+	// log.Printf("[web1] contacts_new_get %+v\n", a.web1.web1)
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		p := payload{}
@@ -84,19 +84,19 @@ func (a *App) contacts_new_get() http.HandlerFunc {
 }
 
 func (a *App) contacts_new() http.HandlerFunc {
-	// log.Printf("[contacts] contacts_new %+v\n", a.contacts.contacts)
+	// log.Printf("[web1] contacts_new %+v\n", a.web1.web1)
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		var c PayloadContact
 		c.Errors.Record = r.ParseForm()
 		if c.Errors.Record != nil {
-			log.Printf("[contacts] contacts_new %v\n", c.Errors.Record)
+			log.Printf("[web1] contacts_new %v\n", c.Errors.Record)
 			payload := struct {
 				Contact PayloadContact
 			}{
 				Contact: c,
 			}
-			a.render(w, r, payload, "layout", "contacts/new")
+			a.render(w, r, payload, "layout", "contact_new")
 			return
 		}
 
@@ -115,7 +115,7 @@ func (a *App) contacts_new() http.HandlerFunc {
 				},
 			}
 			log.Printf("p.contact %+v\n", payload.Contact)
-			a.render(w, r, payload, "layout", "contacts/new")
+			a.render(w, r, payload, "layout", "contact_new")
 			return
 		}
 
@@ -131,7 +131,7 @@ func (a *App) contacts_new() http.HandlerFunc {
 }
 
 func (a *App) contacts_view() http.HandlerFunc {
-	// log.Printf("[contacts] contacts %+v\n", a.contacts.contacts)
+	// log.Printf("[web1] contacts_view %+v\n", a.web1.web1)
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
